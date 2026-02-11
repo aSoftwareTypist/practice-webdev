@@ -1,9 +1,14 @@
-import {config} from 'dotenv';
+import dotenv from "dotenv";
+dotenv.config();
 
-// pathToengfile = "../.env"
-config(/*{path:"../.env"}*/);
+function required(key: string): string {
+  const value = process.env[key];
+  if (!value) throw new Error(`Missing env variable: ${key}`);
+  return value;
+}
 
-export const WEB = {
-    HOST: process.env.HOST || "localhost",
-    PORT: parseInt(process.env.PORT || "5001")
+
+export const WEB_ENV = {
+    HOST: required("HOST"),
+    PORT: parseInt(required("PORT"))
 }
