@@ -1,18 +1,16 @@
 import app from './app.js';
-import {WEB_ENV} from './configs/env.config.js';
+import { ENV } from "./configs"
 
-const startServer = async ()=>{
+const startServer = async () => {
     try {
-        app.listen(WEB_ENV.PORT, WEB_ENV.HOST, (err)=>{
-            if(err)
+        app.listen(ENV.PORT, ENV.HOST, (err) => {
+            if (err)
                 console.log("failed to start server");
-            console.log(`Server started at http://${WEB_ENV.HOST}:${WEB_ENV.PORT}`)
+            console.log(`Server started at http://${ENV.HOST}:${ENV.PORT}`)
         });
-        
     } catch (error) {
     }
 };
+
 startServer();
-
-
 export default startServer;

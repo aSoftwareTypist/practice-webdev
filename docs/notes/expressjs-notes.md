@@ -1,11 +1,36 @@
-# NODE.JS NOTES
+# EXPRESS.JS NOTES
+
+## 1. Express.js
+
+### Introduction
+
+Express is a small web framework that runs on top of Node and itself is an intentionally barebones and unopinionated framework meaning it allows us to do many things how we want, and to extend it with only the features we need. It helps to simplify the Node.js’s web API functionality and add other features. It helps to organize web application through routing and middlewares.
+
+Express add two big features on top of Node.js HTTP server:
+
+* It adds abstraction layer to a lot of complexity by providing number of helpful functions or conveniences. Example: Sending a single JPEG file in raw Node.js requires extensive,  performance-optimized code (~45 lines). In Express, this is reduced to a  one-line sendFile method.
+* It augments Node.js's capabilities with utilities like easier parsing of request URLs, direct access to the client's IP address, simplified response methods
+
+![1770959749475](image/expressjs-notes/request-through-express.png "Figure 1.1 : The Flow of a request through Express")
+
+> Figure 1.1 : The Flow of a request through Express
+
+The flow of a request in an Express application (as show in figure 1.1) involves several layers of modular functionality:
+
+1. The client (browser or mobile app) sends a request.
+2. The Node.js HTTP server receives the request and hands it to Express.
+3. Express processes the request through a middleware stack:
+   - Middleware functions handle logging, parsing, or other general tasks.
+   - Specific route handlers respond to requests for particular URLs or endpoints.
+4. Once processed, the response is sent back to the client.
+
+This layered, modular approach improves flexibility and readability compared to a single large request handler.
+
+### Summary
 
 ---
 
-
-## 1. ENVIRONMENT VARIABLES
-
----
+## 2. ENVIRONMENT VARIABLES
 
 ### Introduction
 
@@ -19,9 +44,9 @@ Enivronment variables are variables that are specific to individual environment.
 
 ### Configuring Environment Variables
 
-There are multiple ways to store configure environment variables but only three methods are discussed. These methods are mostly used during development, testing of project. 
+There are multiple ways to store configure environment variables but only three methods are discussed. These methods are mostly used during development, testing of project.
 
-#### OS level configuration
+* #### OS level configuration
 
 The first method of configuring environment variables is using the shell command `export`, which will save environment variables and their values to the current shell session. To overwrite any variables, just rerun `export` with the new values for those variables. Also, our environment variables will be lost when we terminate the shell. The `printenv` command displays all the environment variables present in terminal.  This is difficult if we had lots of variables.
 
@@ -31,7 +56,7 @@ export NODE_ENV=prod PORT=3000 HOST=localhost
 
 > Note: The environment variables are stored in capital snake case, called `SCREAMING_SNAKE_CASE` or `SHOUTING_CASE` with equals to assignment operator with no space around it.
 
-#### Standard Node.js configuration
+* #### Standard Node.js configuration
 
 In Node, using `dotenv` package to handle environment variables is the standard way.  The `dotenv` package can be installed from npm and is stored as dependencies.
 
@@ -47,7 +72,7 @@ PORT=3000
 HOST=localhost
 ```
 
-#### Production configuration
+* #### Production configuration
 
 The above two configuration can only be used for development, testing and local deployment purposes. The `.env` files are not used in web hosting. In production different hosting services provide dashboard that have `.env` section in hosting where we can configure it but otherwise, always check their documentation! It can also be configured using docker, VPS, CI/CD pipeline, etc.
 
@@ -85,3 +110,67 @@ export const ENV = {
 6. In Node.js, environment variables are accessed via the built-in `process.env` object, and since all values are strings, proper validation and type conversion should always be performed before using them in the application.
 
 ---
+
+<!-- 
+
+## 3. ROUTING 
+
+### Introduction
+
+### Summary
+
+-->
+<!-- 
+
+## 4. MIDDLEWARES 
+
+### Introduction
+
+### Summary
+
+-->
+<!-- 
+
+## 5. REQUEST AND RESPONSE 
+
+### Introduction
+
+### Summary
+
+-->
+<!-- 
+
+## 6. BUILDING API 
+
+### Introduction
+
+### Summary
+
+-->
+<!-- 
+
+## 7. MODELS & ORMS 
+
+### Introduction
+
+### Summary
+
+-->
+<!-- 
+
+## 8. FORMS AND VALIDATION 
+
+### Introduction
+
+### Summary
+
+-->
+<!-- 
+
+## 8. JSON WEB TOKEN 
+
+### Introduction
+
+### Summary
+
+-->
