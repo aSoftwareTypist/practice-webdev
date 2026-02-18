@@ -1,6 +1,6 @@
 # EXPRESS.JS NOTES
 
-## 1. Express.js
+## I. EXPRESS
 
 ### Introduction
 
@@ -17,20 +17,76 @@ Express add two big features on top of Node.js HTTP server:
 
 The flow of a request in an Express application (as show in figure 1.1) involves several layers of modular functionality:
 
-1. The client (browser or mobile app) sends a request.
+1. The client (browser or mobile app) sends a request to the server.
 2. The Node.js HTTP server receives the request and hands it to Express.
 3. Express processes the request through a middleware stack:
    - Middleware functions handle logging, parsing, or other general tasks.
    - Specific route handlers respond to requests for particular URLs or endpoints.
+   - We add our custom made middlewares such as controllers, validators, etc in the middleware stack
 4. Once processed, the response is sent back to the client.
+5. The response is sent through the Node's HTTP server response by Express again.
 
-This layered, modular approach improves flexibility and readability compared to a single large request handler.
+This layered, modular approach improves flexibility and readability compared to a single large request handler of Node's HTTP sever.
+
+### The Core Parts Of Express
+
+An Express app, at high level has four main features:
+
+#### 1. Routing
+
+Routing is a mechanism that maps requests to specific endpoint depending on their URL and HTTP methods. The client's requests are handled with function that gets triggers only when we visit a specific URL with a specific HTTP method. It is achieved by a function called router. For example, request `GET /`  is mapped and returns the homepage through a middleware function.
+
+#### 2. Middlewares
+
+Middlewares are the functions that handles processing of the server request and sending desired response. They handle several tasks from logging of request to setting static files and many more. Express has middleware stack that which  is effectively an array of functions that handles request.
+
+#### 3. Sub-applications
+
+A sub-application is a combination of middlewares and routes helping us to achieve task requested by the client. These are the subdivision of an Express application divided into different smaller apps such as handling APIs, rendering HTML files, sending static files, etc.
+
+#### 4. Views
+
+Views in Express are the dynamically rendered HTML files. Express allows numerous view engines like Pug, EJS (Embedded JavaScript), Handlebars, and more. They helps us to change and send out HTML on the fly.
+
+### The Mandatory Hello-World Program
+
+```javascript
+import express from "express";
+
+const app = express()
+const port = 3000
+
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+})
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
+
+```
+
+The given program is an example of simplest express application and the whole program is described below in a step-wise format.
+
+1. The express package is imported in the beginning
+2. `app` variable then initailizes the express application.
+3. `port` holds the port number that the sever will be hosted on
+4. `app.get()` is a router function that maps `GET` method of `/` URl.
+5. The callback function inside `app.get()` is a middleware function that sends a response of  a HTML file with "Hello World" text in its body
+6. `app.listen` method is used to start sever at given port and also takes an arrow function that logs if server is successfully started.
 
 ### Summary
 
----
+1. Express is a flexible, non-strict web framework that built as an extension of Node's HTTP library, adding abstractions and simplifying response methods.
+2. The client request is handled by express app through middlewares, flown as Node's HTTP server request and response.
+3. Express has four main features:
 
-## 2. ENVIRONMENT VARIABLES
+   - Routing: mapping of URL and HTTP methods
+   - Middlewares: an array functions that take request and send response triggered by a router
+   - Sub-applications: Different smaller application budled together by routes and middlewares
+   - Views: Sends dynamic HTML files
+
+## II. ENVIRONMENT VARIABLES
 
 ### Introduction
 
@@ -46,7 +102,7 @@ Enivronment variables are variables that are specific to individual environment.
 
 There are multiple ways to store configure environment variables but only three methods are discussed. These methods are mostly used during development, testing of project.
 
-* #### OS level configuration
+#### 1. OS level configuration
 
 The first method of configuring environment variables is using the shell command `export`, which will save environment variables and their values to the current shell session. To overwrite any variables, just rerun `export` with the new values for those variables. Also, our environment variables will be lost when we terminate the shell. The `printenv` command displays all the environment variables present in terminal.  This is difficult if we had lots of variables.
 
@@ -56,7 +112,7 @@ export NODE_ENV=prod PORT=3000 HOST=localhost
 
 > Note: The environment variables are stored in capital snake case, called `SCREAMING_SNAKE_CASE` or `SHOUTING_CASE` with equals to assignment operator with no space around it.
 
-* #### Standard Node.js configuration
+#### 2. Standard Node.js configuration
 
 In Node, using `dotenv` package to handle environment variables is the standard way.  The `dotenv` package can be installed from npm and is stored as dependencies.
 
@@ -72,7 +128,7 @@ PORT=3000
 HOST=localhost
 ```
 
-* #### Production configuration
+#### 3. Production configuration
 
 The above two configuration can only be used for development, testing and local deployment purposes. The `.env` files are not used in web hosting. In production different hosting services provide dashboard that have `.env` section in hosting where we can configure it but otherwise, always check their documentation! It can also be configured using docker, VPS, CI/CD pipeline, etc.
 
@@ -119,7 +175,9 @@ export const ENV = {
 
 ### Summary
 
+---
 -->
+
 <!-- 
 
 ## 4. MIDDLEWARES 
@@ -128,7 +186,9 @@ export const ENV = {
 
 ### Summary
 
+---
 -->
+
 <!-- 
 
 ## 5. REQUEST AND RESPONSE 
@@ -137,7 +197,9 @@ export const ENV = {
 
 ### Summary
 
+---
 -->
+
 <!-- 
 
 ## 6. BUILDING API 
@@ -146,7 +208,9 @@ export const ENV = {
 
 ### Summary
 
+---
 -->
+
 <!-- 
 
 ## 7. MODELS & ORMS 
@@ -155,7 +219,9 @@ export const ENV = {
 
 ### Summary
 
+---
 -->
+
 <!-- 
 
 ## 8. FORMS AND VALIDATION 
@@ -164,7 +230,9 @@ export const ENV = {
 
 ### Summary
 
+---
 -->
+
 <!-- 
 
 ## 8. JSON WEB TOKEN 
@@ -173,4 +241,13 @@ export const ENV = {
 
 ### Summary
 
+---
 -->
+
+## REFERENCES
+
+1. [Express](expressjs.com "Node.js web application framework")
+2. [The Odin Project](theodinproject.com/paths/full-stack-javascript/courses/nodejs "Nodejs course")
+3. [Express In Action](https://www.amazon.com/Express-Action-Writing-building-applications/dp/1617292427 "Book by Ethan Hahn")
+
+---
