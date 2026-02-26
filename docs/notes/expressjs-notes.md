@@ -1,5 +1,35 @@
 # EXPRESS.JS NOTES
 
+## TABLE OF CONTENTS
+
+- [EXPRESS.JS NOTES](#expressjs-notes)
+  - [TABLE OF CONTENTS](#table-of-contents)
+  - [I. EXPRESS](#i-express)
+    - [Introduction](#introduction)
+    - [The Core Parts Of Express](#the-core-parts-of-express)
+      - [1. Routing](#1-routing)
+      - [2. Middlewares](#2-middlewares)
+      - [3. Sub-applications](#3-sub-applications)
+      - [4. Views](#4-views)
+    - [The Mandatory Hello-World Program](#the-mandatory-hello-world-program)
+    - [Summary](#summary)
+  - [II. ENVIRONMENT VARIABLES](#ii-environment-variables)
+    - [Introduction](#introduction-1)
+    - [Configuring Environment Variables](#configuring-environment-variables)
+      - [1. OS level configuration](#1-os-level-configuration)
+      - [2. Standard Node.js configuration](#2-standard-nodejs-configuration)
+      - [3. Production configuration](#3-production-configuration)
+    - [Accessing Environment Variables](#accessing-environment-variables)
+    - [Summary](#summary-1)
+  - [III. ROUTING](#iii-routing)
+    - [Introduction](#introduction-2)
+    - [Routing in Express](#routing-in-express)
+      - [Grabbing route parameters or path variables](#grabbing-route-parameters-or-path-variables)
+      - [Grabbing query parameter](#grabbing-query-parameter)
+    - [Routers](#routers)
+    - [Summary](#summary-2)
+  - [REFERENCES](#references)
+
 ---
 
 ## I. EXPRESS
@@ -10,8 +40,8 @@ Express is a small web framework that runs on top of Node and itself is an inten
 
 Express add two big features on top of Node.js HTTP server:
 
-* It adds abstraction layer to a lot of complexity by providing number of helpful functions or conveniences. Example: Sending a single JPEG file in raw Node.js requires extensive,  performance-optimized code (~45 lines). In Express, this is reduced to a  one-line sendFile method.
-* It augments Node.js's capabilities with utilities like easier parsing of request URLs, direct access to the client's IP address, simplified response methods
+- It adds abstraction layer to a lot of complexity by providing number of helpful functions or conveniences. Example: Sending a single JPEG file in raw Node.js requires extensive,  performance-optimized code (~45 lines). In Express, this is reduced to a  one-line sendFile method.
+- It augments Node.js's capabilities with utilities like easier parsing of request URLs, direct access to the client's IP address, simplified response methods
 
 ![1770959749475](image/expressjs-notes/request-through-express.png "Figure 1.1 : The Flow of a request through Express")
 
@@ -22,9 +52,9 @@ The flow of a request in an Express application (as show in figure 1.1) involves
 1. The client (browser or mobile app) sends a request to the server.
 2. The Node.js HTTP server receives the request and hands it to Express.
 3. Express processes the request through a middleware stack:
-   * Middleware functions handle logging, parsing, or other general tasks.
-   * Specific route handlers respond to requests for particular URLs or endpoints.
-   * We add our custom made middlewares such as controllers, validators, etc in the middleware stack
+   - Middleware functions handle logging, parsing, or other general tasks.
+   - Specific route handlers respond to requests for particular URLs or endpoints.
+   - We add our custom made middlewares such as controllers, validators, etc in the middleware stack
 4. Once processed, the response is sent back to the client.
 5. The response is sent through the Node's HTTP server response by Express again.
 
@@ -81,10 +111,10 @@ The given program is an example of simplest express application and the whole pr
 1. Express is a flexible, non-strict web framework that built as an extension of Node's HTTP library, adding abstractions and simplifying response methods.
 2. The client request is handled by express app through middlewares, flown as Node's HTTP server request and response objects.
 3. Express has four main features:
-   * Routing: mapping of URL and HTTP methods
-   * Middlewares: an array functions that take request and send response triggered by a router
-   * Sub-applications: Different smaller application budled together by routes and middlewares
-   * Views: Sends dynamic HTML files via templating engine
+   - Routing: mapping of URL and HTTP methods
+   - Middlewares: an array functions that take request and send response triggered by a router
+   - Sub-applications: Different smaller application budled together by routes and middlewares
+   - Views: Sends dynamic HTML files via templating engine
 
 ---
 
@@ -94,9 +124,9 @@ The given program is an example of simplest express application and the whole pr
 
 Enivronment variables are variables that are specific to individual environment. They are useful to important  information in key-value pairs outside of the source code of the project. These values are access by application during runtime. These variables are mainly used for:
 
-* Providing different values for different environments like development, testing, production so that we do not have to modify our project code.
-* Storing vital secrets such as keys, database passwords or username, etc.
-* Settings for hosting like host, ports etc
+- Providing different values for different environments like development, testing, production so that we do not have to modify our project code.
+- Storing vital secrets such as keys, database passwords or username, etc.
+- Settings for hosting like host, ports etc
 
  These environment variables are crucial to be hidden from hackers or leechers as they contain major information that could compromise the security of the project. The files containing these variables even should never be shown to others or even commit to Github.
 
