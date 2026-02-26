@@ -1,5 +1,7 @@
 # EXPRESS.JS NOTES
 
+---
+
 ## I. EXPRESS
 
 ### Introduction
@@ -20,9 +22,9 @@ The flow of a request in an Express application (as show in figure 1.1) involves
 1. The client (browser or mobile app) sends a request to the server.
 2. The Node.js HTTP server receives the request and hands it to Express.
 3. Express processes the request through a middleware stack:
-   - Middleware functions handle logging, parsing, or other general tasks.
-   - Specific route handlers respond to requests for particular URLs or endpoints.
-   - We add our custom made middlewares such as controllers, validators, etc in the middleware stack
+   * Middleware functions handle logging, parsing, or other general tasks.
+   * Specific route handlers respond to requests for particular URLs or endpoints.
+   * We add our custom made middlewares such as controllers, validators, etc in the middleware stack
 4. Once processed, the response is sent back to the client.
 5. The response is sent through the Node's HTTP server response by Express again.
 
@@ -63,7 +65,6 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
-
 ```
 
 The given program is an example of simplest express application and the whole program is described below in a step-wise format.
@@ -78,13 +79,14 @@ The given program is an example of simplest express application and the whole pr
 ### Summary
 
 1. Express is a flexible, non-strict web framework that built as an extension of Node's HTTP library, adding abstractions and simplifying response methods.
-2. The client request is handled by express app through middlewares, flown as Node's HTTP server request and response.
+2. The client request is handled by express app through middlewares, flown as Node's HTTP server request and response objects.
 3. Express has four main features:
+   * Routing: mapping of URL and HTTP methods
+   * Middlewares: an array functions that take request and send response triggered by a router
+   * Sub-applications: Different smaller application budled together by routes and middlewares
+   * Views: Sends dynamic HTML files via templating engine
 
-   - Routing: mapping of URL and HTTP methods
-   - Middlewares: an array functions that take request and send response triggered by a router
-   - Sub-applications: Different smaller application budled together by routes and middlewares
-   - Views: Sends dynamic HTML files
+---
 
 ## II. ENVIRONMENT VARIABLES
 
@@ -151,7 +153,6 @@ export const ENV = {
   HOST: required("HOST"),
   NODE_ENV: process.env.NODE_ENV || "development",
 };
-
 ```
 
 > Note: The `.env` variables are always string and no hardcoding of those values should be done into the source code.
@@ -167,16 +168,40 @@ export const ENV = {
 
 ---
 
-<!-- 
-
-## 3. ROUTING 
+## III. ROUTING
 
 ### Introduction
 
+Routing is the process where a server maps the HTTP verbs and URIs to specific methods that generates response to the client request. A basic example is when we visit `example.com/client` in browser. The raw HTTP request and the controller function looks like:
+
+```http
+GET /client http/1.1
+```
+
+```javascript
+app.get("/client",function(request, response){
+  response.send("Welcome to client page");
+});
+```
+
+The request has a HTTP verb (GET), a URI (`/client`) and the HTTP version 1.1. The server maps URI and HTTP method to specific controller. The `app.get` here has a controller function which is triggered by server for the given request. The controller generates and sends a response, here a HTML file with "Welcome to clientpage" in the body, to the client.
+
+### Routing in Express
+
+Express gives flexibility to define routes from different places in the app, unlike Django where routes are defined in a single file (urls.py). For the standard, we will be defining routes in `routes` folder. In this project, we will be defining route for api version 1 so it will be in `backend/src/v1/routes/` folder.
+
+#### Grabbing route parameters or path variables
+
+#### Grabbing query parameter
+
+### Routers
+
 ### Summary
 
+1. Routing is mapping of URIs and HTTP methods to specific middlewares that generates response.
+2. Routes can be defined anywhere in Express, but it is standard to define routes inside `routes` folder specific to version.
+
 ---
--->
 
 <!-- 
 
@@ -201,6 +226,16 @@ export const ENV = {
 -->
 
 <!-- 
+
+## 6. VIEWS
+
+### Introduction
+
+### Summary
+
+--->
+
+<!--
 
 ## 6. BUILDING API 
 
@@ -248,6 +283,6 @@ export const ENV = {
 
 1. [Express](expressjs.com "Node.js web application framework")
 2. [The Odin Project](theodinproject.com/paths/full-stack-javascript/courses/nodejs "Nodejs course")
-3. [Express In Action](https://www.amazon.com/Express-Action-Writing-building-applications/dp/1617292427 "Book by Ethan Hahn")
+3. [Express In Action](amazon.com/Express-Action-Writing-building-applications/dp/1617292427 "Book by Ethan Hahn")
 
 ---
