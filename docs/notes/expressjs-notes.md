@@ -29,8 +29,8 @@ Express is a small web framework that runs on top of Node and itself is an inten
 
 Express add two big features on top of Node.js HTTP server:
 
-- It adds abstraction layer to a lot of complexity by providing number of helpful functions or conveniences. Example: Sending a single JPEG file in raw Node.js requires extensive,  performance-optimized code (~45 lines). In Express, this is reduced to a  one-line sendFile method.
-- It augments Node.js's capabilities with utilities like easier parsing of request URLs, direct access to the client's IP address, simplified response methods
+* It adds abstraction layer to a lot of complexity by providing number of helpful functions or conveniences. Example: Sending a single JPEG file in raw Node.js requires extensive,  performance-optimized code (~45 lines). In Express, this is reduced to a  one-line sendFile method.
+* It augments Node.js's capabilities with utilities like easier parsing of request URLs, direct access to the client's IP address, simplified response methods
 
 ![1770959749475](image/expressjs-notes/request-through-express.png "Figure 1.1 : The Flow of a request through Express")
 
@@ -41,9 +41,9 @@ The flow of a request in an Express application (as show in figure 1.1) involves
 1. The client (browser or mobile app) sends a request to the server.
 2. The Node.js HTTP server receives the request and hands it to Express.
 3. Express processes the request through a middleware stack:
-   - Middleware functions handle logging, parsing, or other general tasks.
-   - Specific route handlers respond to requests for particular URLs or endpoints.
-   - We add our custom made middlewares such as controllers, validators, etc in the middleware stack
+   + Middleware functions handle logging, parsing, or other general tasks.
+   + Specific route handlers respond to requests for particular URLs or endpoints.
+   + We add our custom made middlewares such as controllers, validators, etc in the middleware stack
 4. Once processed, the response is sent back to the client.
 5. The response is sent through the Node's HTTP server response by Express again.
 
@@ -100,10 +100,10 @@ The given program is an example of simplest express application and the whole pr
 1. Express is a flexible, non-strict web framework that built as an extension of Node's HTTP library, adding abstractions and simplifying response methods.
 2. The client request is handled by express app through middlewares, flown as Node's HTTP server request and response objects.
 3. Express has four main features:
-   - Routing: mapping of URL and HTTP methods
-   - Middlewares: an array functions that take request and send response triggered by a router
-   - Sub-applications: Different smaller application budled together by routes and middlewares
-   - Views: Sends dynamic HTML files via templating engine
+   + Routing: mapping of URL and HTTP methods
+   + Middlewares: an array functions that take request and send response triggered by a router
+   + Sub-applications: Different smaller application budled together by routes and middlewares
+   + Views: Sends dynamic HTML files via templating engine
 
 ---
 
@@ -113,9 +113,9 @@ The given program is an example of simplest express application and the whole pr
 
 Enivronment variables are variables that are specific to individual environment. They are useful to important  information in key-value pairs outside of the source code of the project. These values are access by application during runtime. These variables are mainly used for:
 
-- Providing different values for different environments like development, testing, production so that we do not have to modify our project code.
-- Storing vital secrets such as keys, database passwords or username, etc.
-- Settings for hosting like host, ports etc
+* Providing different values for different environments like development, testing, production so that we do not have to modify our project code.
+* Storing vital secrets such as keys, database passwords or username, etc.
+* Settings for hosting like host, ports etc
 
  These environment variables are crucial to be hidden from hackers or leechers as they contain major information that could compromise the security of the project. The files containing these variables even should never be shown to others or even commit to Github.
 
@@ -198,27 +198,115 @@ GET /client http/1.1
 ```
 
 ```javascript
-app.get("/client",function(request, response){
+app.get("/clients",function(request, response){
   response.send("Welcome to client page");
 });
 ```
 
-The request has a HTTP verb (GET), a URI (`/client`) and the HTTP version 1.1. The server maps URI and HTTP method to specific controller. The `app.get` here has a controller function which is triggered by server for the given request. The controller generates and sends a response, here a HTML file with "Welcome to clientpage" in the body, to the client.
+The request has a HTTP verb (GET), a URI (`/client`) and the HTTP version 1.1. The server maps URI and HTTP method to specific controller. The `app.get()` here has a controller function which is triggered by server for the given request. The controller generates and sends a response, here a HTML file with "Welcome to clientpage" in the body, to the client.
 
 ### Routing in Express
 
-Express gives flexibility to define routes from different places in the app, unlike Django where routes are defined in a single file (urls.py). For the standard, we will be defining routes in `routes` folder. In this project, we will be defining route for api version 1 so it will be in `backend/src/v1/routes/` folder.
+In Express.js, routing is achieved by defining routes using methods like `app.get()`, `app.post()`, `app.put()`, and `app.delete()`. Each route consists of a **path** and one or more **handler functions** (middlewares).
 
-#### Grabbing route parameters or path variables
+```javascript
+app.get("/path", function(){
+  res.send("This is one of the middleware function")
+});
+```
+
+#### Grabbing route parameters
+
+We can pass variables in the route paths, these variables are called route parameters as well as path variables. In Express, this can be achieve in a very simple way by just putting a full colon(':') in front of the variable name.
+
+```javascript
+app.get("/clients/:cid/:dt",function(req, res){
+
+  let client_id = parseInt(req.params?.cid);
+  let date = req.params?.dt;
+
+  // Other code ...
+
+});
+```
+
+The `req.params` object of Express maps & stores all the variables for the path, however, the value is always in string type.
 
 #### Grabbing query parameter
 
+The query arguments which we pass through url after '?' is available in query object of request i.e.  `req.query`.
+
+```http
+GET /search?fruit=apple
+```
+
+```javascript
+app.get("/search", async function(req, res){
+
+  let fruitSrch = req.query?.fruit;
+
+  // Other code...
+
+});
+```
+
+> The `request` object, here `req`, will be discussed in [V. REQUEST & RESPONSE] chapter.
+
+#### Matching route with regular expressions
+
+Express allows regex based routes.
+
+```javascript
+app.get(/^\/product\/[0-9]+$/, (req, res) => {
+  res.send("Product with numeric ID");
+});
+```
+
+This matches `/product/123` but not `/product/abc`.
+
 ### Routers
+
+Routers are the functions in Express that enables us to split routes. This achieves standard and structure in our code. Express gives flexibility to define routes from different places in the app, unlike Django where routes are defined in a single file (urls.py).
+
+For the standard, we will be defining routes in `routes` folder. In this project, we will be defining route for api version 1 so it will be in `backend/src/v1/routes/` folder.
+
+```javascript
+// this is app.js
+import express from 'express';
+
+// Routers
+import apiVersion1 from 'v1/routes/version1.js';
+
+let app = express();
+
+app.use("/v1/api", apiVersion1); //similarly,
+// app.use('/v2', apiVersion2); // if version 2
+
+// Other code ...
+```
+
+```javascript
+// this is v1/routes/version1.js
+import { Router } from 'express';
+let api = Router();
+
+api.route("/client")
+  .get(/*, middlewares1, middleware 2, ... ,*/
+    function(req, res)=>{
+    res.send("response for /v1/api/client")
+});
+
+exports default api;
+```
+
+> We can futher split routes with the help of routers, similarly as example.
 
 ### Summary
 
 1. Routing is mapping of URIs and HTTP methods to specific middlewares that generates response.
-2. Routes can be defined anywhere in Express, but it is standard to define routes inside `routes` folder specific to version.
+2. `request.params` & `request.query` helps us to get path variable and query parameter in Express.
+3. Routes can be defined anywhere in Express, but it is standard to define routes inside `routes` folder specific to version.
+4. We can split routes with the use of `Router`.
 
 ---
 
