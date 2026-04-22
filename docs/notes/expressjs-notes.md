@@ -17,6 +17,14 @@
   + [Routing in Express](#routing-in-express)
   + [Routers](#routers)
   + [Summary](#summary-2)
+* [IV. MIDDLEWARES](#iv-middlewares)
+  + [Introduction](#introduction-3)
+  + [Static Server Middleware](#static-server-middleware)
+  + [Controller Function](#controller-function)
+  + [404 Handler Middleware](#404-handler-middleware)
+  + [Error Handling Middleware](#error-handling-middleware)
+  + [Other Useful Middleware](#other-useful-middleware)
+  + [Summary](#summary-3)
 * [REFERENCES](#references)
 
 ---
@@ -32,7 +40,7 @@ Express add two big features on top of Node.js HTTP server:
 * It adds abstraction layer to a lot of complexity by providing number of helpful functions or conveniences. Example: Sending a single JPEG file in raw Node.js requires extensive,  performance-optimized code (~45 lines). In Express, this is reduced to a  one-line sendFile method.
 * It augments Node.js's capabilities with utilities like easier parsing of request URLs, direct access to the client's IP address, simplified response methods
 
-![1770959749475](image/expressjs-notes/request-through-express.png "Figure 1.1 : The Flow of a request through Express")
+![Figure 1.1](image/expressjs-notes/request-through-express.png "The Flow of a request through Express")
 
 > Figure 1.1 : The Flow of a request through Express
 
@@ -140,7 +148,7 @@ In Node, using `dotenv` package to handle environment variables is the standard 
 ```bash
 npm i dotenv
 ```
-
+  
 These variables are used to store in `.env` file in Node.js. This file is kept in root of our project folder and must be added in `.gitignore` limiting to our local machine. Example of variables stored in `.env` is given below:
 
 ```.env
@@ -205,7 +213,7 @@ app.get("/clients",function(request, response){
 
 The request has a HTTP verb (GET), a URI (`/client`) and the HTTP version 1.1. The server maps URI and HTTP method to specific controller. The `app.get()` here has a controller function which is triggered by server for the given request. The controller generates and sends a response, here a HTML file with "Welcome to clientpage" in the body, to the client.
 
-### Routing in Express
+### Routing In Express
 
 In Express.js, routing is achieved by defining routes using methods like `app.get()`, `app.post()`, `app.put()`, and `app.delete()`. Each route consists of a **path** and one or more **handler functions** (middlewares).
 
@@ -303,23 +311,79 @@ exports default api;
 
 ### Summary
 
-1. Routing is mapping of URIs and HTTP methods to specific middlewares that generates response.
-2. `request.params` & `request.query` helps us to get path variable and query parameter in Express.
+1. Routes can be mapped to simple string or regular expressions and can have variables.
+2. `request.params` & `request.query` helps us to get path variable and query parameter respectively in Express.
 3. Routes can be defined anywhere in Express, but it is standard to define routes inside `routes` folder specific to version.
 4. We can split routes with the use of `Router`.
 
 ---
 
-<!-- 
-
-## 4. MIDDLEWARES 
+## IV. MIDDLEWARES
 
 ### Introduction
+
+Middlewares are the functions are core to Express as they handle request and responses. Express helps request objects pass through the array of functions that acts as a stack for request processing which we call middleware stack.
+
+Express executes middlewares in order we define. This means that the sequence we add middleware in the stack matters for a well generated response.
+
+![Figure 4.1](./image/expressjs-notes/array-of-middleware-functions.png "Array of middleware functions")
+
+> Figure 4.1: Array of middleware functions
+
+The middleware function generally takes three arguments: request, response and next as shown in figure below. The `request` and `response` represents the HTTP request and response objects but the `next` function passes the request processing to next middleware in the stack.
+
+![Figure 4.2](./image/expressjs-notes/middleware-function-with-three-arguments.png "Middleware function with three arguments")
+
+> Figure 4.2 Middleware function with three arguments
+
+Every middleware function must be returned by the `next()` or `response.end()`. The `next()` transfers the flow of program to next middleware in the stack. The `response.end()` ends the response handling and again Node runtime bundles the response into bytes and sends it to user.
+
+If we don’t use `next()` or `response.end()` the request will stuck endlessly as it is not resolved. `response.end()` is a must at the end, we can use similar function such as `response.send()` or `response.sendFile()` that calles `response.end()` internally.
+
+### Controller Function
+
+For a Model-View-Controller (MVC) architecture pattern,controllers are the type of middlewares in the middleware stack that handles business logic and end with a reponse. This could involve working with databases, making calculations or processing through different service functions. It mostly ends the middleware stack if no error occured.
+
+### Error Handling Middleware
+
+There is also a special type of middleware that handles errors. It handles all the error that comes down from other middlewares, thrown by Express app. When a regular middleware encounters a runtime error, Express ignores all the middlewares in the stack and jumps right into the error-handling middleware.
+
+![Figure 4.3](./image/expressjs-notes/trigerring-of-error-handling-middleware.png "Trigerring of error handling middleware")
+> Figure 4.3 Trigerring of error handling middleware
+
+The error-handling middleware function, unlike other middleware has 4 arguments: error, request, response and next. The extra argument `error` holds the error object thrown by the previous middleware. It also ends with `next()` or `response.end()`.
+
+### 404 Handler Middleware
+
+The 404 handler middleware is the simplest type of function that handles the request that handles routes that does not exist.
+
+Example:
+
+```javascript
+app.use((req, res, next) => {
+    res.status(404).json({error: "Not Found", message: "The requested resource could not be found."});
+});
+```
+
+The 404-handler middleware is kept at the last piece of middleware of the express application. It acts as fallback of request for unmatched routes.
+
+### Static Server Middleware
+
+The static middlewares serve the static files such as images, css, js, etc from the server. Express has built-in static middlware i.e. `express.static()`.
+
+```javascript
+// for "project/backend/public/"
+const publicDir = path.resolve(__dirname, ‘backend/pubilc’);
+app.use(express.static(publicDir));
+```
+
+The static middleware shares every files of `<project_directory>/backend/public/` folder as publicDir is the path of the pubic folder inside project folder. Here, the express setups public directory when the server is running. After each request to access public files, the server searches the public directory if not found then transfers it to 404 middleware as it won’t throw any error.
+
+### Other Useful Middleware
 
 ### Summary
 
 ---
--->
 
 <!-- 
 
@@ -388,8 +452,9 @@ exports default api;
 
 ## REFERENCES
 
-1. [Express](expressjs.com "Node.js web application framework")
-2. [The Odin Project](theodinproject.com/paths/full-stack-javascript/courses/nodejs "Nodejs course")
-3. [Express In Action](amazon.com/Express-Action-Writing-building-applications/dp/1617292427 "Book by Ethan Hahn")
+* [Express](expressjs.com "Node.js web application framework")
+* [The Odin Project](theodinproject.com/paths/full-stack-javascript/courses/nodejs "Nodejs course")
+* [Express In Action](amazon.com/Express-Action-Writing-building-applications/dp/1617292427 "Book by Ethan Hahn")
+* [Chatgpt](chatgpt.com, "an LLM AI model")
 
 ---
