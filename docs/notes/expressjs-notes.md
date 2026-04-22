@@ -336,6 +336,27 @@ The middleware function generally takes three arguments: request, response and n
 
 > Figure 4.2 Middleware function with three arguments
 
+We use middleware by registering it with `app.use()` for global execution or attaching it directly to specific routes.
+
+```javascript
+const express = require('express');
+const app = express();
+
+// Custom middleware
+const logger = (request, response, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next(); // pass control to next middleware
+};
+
+// Use middleware globally
+app.use(logger);
+
+// Route specific middleware
+app.get('/', (request, response) => {
+  res.send('Hello World');
+});
+```
+
 Every middleware function must be returned by the `next()` or `response.end()`. The `next()` transfers the flow of program to next middleware in the stack. The `response.end()` ends the response handling and again Node runtime bundles the response into bytes and sends it to user.
 
 If we don’t use `next()` or `response.end()` the request will stuck endlessly as it is not resolved. `response.end()` is a must at the end, we can use similar function such as `response.send()` or `response.sendFile()` that calles `response.end()` internally.
@@ -380,6 +401,20 @@ app.use(express.static(publicDir));
 The static middleware shares every files of `<project_directory>/backend/public/` folder as publicDir is the path of the pubic folder inside project folder. Here, the express setups public directory when the server is running. After each request to access public files, the server searches the public directory if not found then transfers it to 404 middleware as it won’t throw any error.
 
 ### Other Useful Middleware
+
+In Express, beyond basic middleware usage, there are many commonly used third-party and built-in middlewares that handle specific tasks in real-world applications.
+
+* Helmet: Security middleware that protects apps by setting safe HTTP headers.
+
+* Cors: Allows or restricts cross-origin requests when your frontend and backend run on different domains.
+
+* Morgan: Logs incoming requests for debugging and monitoring.
+
+* cookie-parser: Reads cookies and express-session manages user sessions, which is useful for authentication systems.
+
+* Multer: Multer processes multipart/form-data when dealing with file uploads.
+
+* express-rate-limit: prevents abuse by limiting repeated requests.
 
 ### Summary
 
