@@ -2,7 +2,7 @@
   "compilerOptions": {
     /* Language & runtime */
     "target": "ES2022",
-    "module": "ES2022",
+    "module": "nodenext",
     "lib": ["ES2022"],
 
     /* Project structure */
@@ -12,7 +12,7 @@
     "removeComments": true,
 
     /* Module resolution */
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,

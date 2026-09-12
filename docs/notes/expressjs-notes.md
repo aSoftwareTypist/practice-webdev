@@ -19,12 +19,15 @@
   + [Summary](#summary-2)
 * [IV. MIDDLEWARES](#iv-middlewares)
   + [Introduction](#introduction-3)
-  + [Static Server Middleware](#static-server-middleware)
   + [Controller Function](#controller-function)
-  + [404 Handler Middleware](#404-handler-middleware)
   + [Error Handling Middleware](#error-handling-middleware)
+  + [404 Handler Middleware](#404-handler-middleware)
+  + [Static Server Middleware](#static-server-middleware)
   + [Other Useful Middleware](#other-useful-middleware)
   + [Summary](#summary-3)
+* [VI. BUILDING APIS](#vi-building-api)
+  + [Introduction](#introduction-4)
+  + [Summary](#summary-4)
 * [REFERENCES](#references)
 
 ---
@@ -148,7 +151,7 @@ In Node, using `dotenv` package to handle environment variables is the standard 
 ```bash
 npm i dotenv
 ```
-  
+
 These variables are used to store in `.env` file in Node.js. This file is kept in root of our project folder and must be added in `.gitignore` limiting to our local machine. Example of variables stored in `.env` is given below:
 
 ```.env
@@ -370,6 +373,7 @@ For a Model-View-Controller (MVC) architecture pattern,controllers are the type 
 There is also a special type of middleware that handles errors. It handles all the error that comes down from other middlewares, thrown by Express app. When a regular middleware encounters a runtime error, Express ignores all the middlewares in the stack and jumps right into the error-handling middleware.
 
 ![Figure 4.3](./image/expressjs-notes/trigerring-of-error-handling-middleware.png "Trigerring of error handling middleware")
+
 > Figure 4.3 Trigerring of error handling middleware
 
 The error-handling middleware function, unlike other middleware has 4 arguments: error, request, response and next. The extra argument `error` holds the error object thrown by the previous middleware. It also ends with `next()` or `response.end()`.
@@ -418,18 +422,62 @@ In Express, beyond basic middleware usage, there are many commonly used third-pa
 
 ### Summary
 
+1. Middlewares are core functions in Express that handle HTTP requests and responses by forming a middleware stack through which each request passes.
+
+2. Express executes middlewares in the order they are defined, so proper sequencing is important for correct request handling.
+
+3. A typical middleware function has three parameters: `request`, `response`, and `next`, where `next()` passes control to the next middleware.
+
+4. Every middleware must either call next() to continue the flow or end the response using methods like res.send() or res.end() to avoid hanging requests.
+
+5. Middlewares can be applied globally using app.use() or to specific routes, depending on the requirement.
+
+6. Controller functions are specialized middlewares that contain business logic and usually terminate the request-response cycle.
+
+7. Error-handling middleware has four parameters (error, request, response, next) and is triggered when an error occurs, skipping normal middlewares.
+
+8. 404 handler middleware is placed at the end of the stack to handle unmatched routes and return a “Not Found” response.
+
+9. Static middleware (express.static) is used to serve static files like images, CSS, and JavaScript from a specified directory.
+
+10. Common useful middlewares include: Helmet (security headers), Cors (cross-origin requests), Morgan (request logging), cookie-parser / express-session (cookies and sessions), Multer (file uploads), express-rate-limit (rate limiting)
+
+11. Overall, middleware enables modular, reusable, and organized request processing in Express applications.
+
 ---
 
-<!-- 
-
-## 5. REQUEST AND RESPONSE 
+## V. REQUEST AND RESPONSE
 
 ### Introduction
+
+In Express.js, the `request` and `response` objects form the foundation of client-server communication. Every time a client ( such as a browser or API consumer ) sends an HTTP request, Express creates these two objects and passes them through the middleware stack and route handlers.
+
+The `request` or `req` object represents the HTTP request and has properties for the request query string, parameters, body, HTTP headers, and so on. On the other hand, the `response` or `res` object represents the HTTP response that an Express app sends when it gets an HTTP request.
+
+Together, they enable developers to build dynamic web applications and APIs by handling user input and generating appropriate outputs.
+
+### Request Object
+
+The `request` object is an enhanced version of Node.js’s native HTTP request object. Express extends it with additional useful properties and methods.
+
+#### Key Properties of Request Object
+
+* `req.params`: Contains route parameters (e.g., `/users/:id`)
+* `req.query`: Contains query string parameters (e.g., `/search?q=term`)
+* `req.body`: Contains data sent in the request body (requires middleware like JSON parser)
+* `req.headers`: Contains HTTP headers sent by the client
+* `req.method`: HTTP method used (GET, POST, PUT, DELETE)
+* `req.url` / `req.path`: The requested URL or path
+
+Request objects are immutable in terms of core structure but can be extended with custom properties, The core structure of `req` should not be modified (e.g., overwriting built-in properties), but adding new properties is a common and accepted practice.
+
+### Response Object
+
+Request objects are immutable in terms of core structure but can be extended with custom properties.
 
 ### Summary
 
 ---
--->
 
 <!-- 
 
@@ -441,28 +489,183 @@ In Express, beyond basic middleware usage, there are many commonly used third-pa
 
 --->
 
-<!--
+## VI. BUILDING API
 
-## 6. BUILDING API 
+### Introduction
+
+### HTTP Verbs(HTTP Methods)
+
+Htttp verbs are the type of methods that client sends request to the server along with requests. Example:
+
+GET     /olivia     **http/****1.1**
+
+There are generally 4 types of methods:
+
+1. **GET:** GET method sends client read only data. It is an idempotent method.
+2. **POST:** POST method, creates a new record. It is not for updating methods. It is used also for  adding things in cart, list etc.
+3. **PUT / PATCH:** PUT or PATCH updates existing records but  PUT creates a new record if the updating record doesn’t exist. They are idempotent since change in a record is always same regardless the number of times it is done.
+4. **DELETE:** DELETE method obviously deletes the existing data as it refers. It is also idempotent as deleting a record always deletes the same record not the other.
+
+Idempotent means that the method will not change the data differently however many times it is called.
+
+These specifications are not mandatory but a standard.
+
+### API versioning
+
+API versioning is helpful to mitigate the problem of updating version of the API used. It helps to other to consume the API without the problem of completely stripping them of  API usage.
+
+Example:
+
+```http
+/v1/timezone
+```
+
+Express can help to do API versioning efficiently by making this kind of separation easy with the help of routers.
+
+### Summary
+
+---
+
+## VII. WORKING WITH DATABASE
+
+### Introduction
+
+### Connecting database
+
+We need to import `mysql2` or `mysql2/promise`. The promise version creates an asynchronous connection with database. We can use its function asynchronously too.
+To connect database we can use either `createPool` or `createConnection`. `createConnect` creates a single connection to MySQL database. It is used for simple oneoff queries.
+`createPool` handles multiple connection to MySQL database that can be reused for multiple queries concurrently. So we will be using `createPool()`;
+
+``` javascript
+// connect.js
+const { createPool } = require('mysql2/promise');
+ 
+const pool = createPool({
+    host: 'localhost',
+    user: `root`,
+    password: `1234`,
+    database: 'express_tut',
+    connectionLimit: 10,
+    queueLimit: 0,
+});
+```
+
+### Testing connection
+
+We use the getConnection( ) method of pool object, that retrieves connection with database to handle queries. We also need to use release() method (of returned getConnection object) that transfers the connection back to pool.
+
+```javascript
+
+const testConnection = async function () {
+    try {
+        const connection = await pool.getConnection(); // This function checks connection
+        console.log('✅ Database connected!');
+        connection.release(); // This important to release connection from database back to pool
+        return true;
+ 
+    } catch (error) {
+        console.error('❌ Database connection error::', error.message);
+        return false;
+    }
+}
+
+// if we call testConnection it checks connection with database.
+testConnection(); 
+```
+
+Note: We keep this file as db.js in ‘project_folder/config/’
+
+### CRUD operations
+
+In `models/` folder we created asynchronous functions that handles crud operations in database. Since we are not using an orm, We already created a table called ‘Tasks’ in ‘express_tut’ database of MySQL.
+
+```javascript
+const { pool } = require('../config/db');// importing pool.
+ 
+const getAllTaskDB = async () => {
+    let sqlQuery = 'SELECT * FROM Tasks;'
+    try {
+        let [result] = await pool.execute(sqlQuery);
+        return result;
+    } catch (err) {
+        console.log('getAllTaskDB err:', err);
+        throw err;
+    }
+}
+  
+const getTaskDB = async (task_id) => {
+    let sqlQuery = 'SELECT * FROM Tasks WHERE id = ?'
+    try {
+        let result = await pool.execute(sqlQuery, [task_id]);
+ 
+        return (result[0].length > 0) ? result[0] : null;
+ 
+    } catch (err) {
+        console.error('getTaskDB err:', err);
+        throw err;
+    }
+};
+ 
+const createTaskDB = async (name, completed) => {
+    let sqlQuery = 'INSERT INTO Tasks(name, completed) VALUES (?,?)'
+    try {
+        let result = await pool.execute(sqlQuery, [name, completed]);
+        return result;
+    } catch (err) {
+        console.log('createTaskDB err: ', err);
+        throw err;
+    }
+};
+ 
+const updateTaskDB = async (id, name, completed) => {
+    let sqlQuery = 'UPDATE Tasks SET name=?, completed=? WHERE id = ?'
+    try {
+        let sqlQueryResult = await pool.execute(sqlQuery, [name, completed, id])
+        let result = await getTaskDB(id);
+        return (sqlQueryResult[0].affectedRows > 0) ? result : null;
+    }
+    catch (err) {
+        console.log('udpdateTaskDB err:', err);
+        throw err;
+    }
+};
+  
+const deleteTaskDB = async (id) => {
+    let sqlQuery = 'DELETE FROM Tasks WHERE id=?';
+    try {
+
+        let deletedTask = await getTaskDB(id);
+        let sqlQueryResult = await pool.execute(sqlQuery, [id]); 
+
+return (sqlQueryResult[0].affectedRows > 0) ? deletedTask : null;
+ 
+    } catch (err) {
+        console.log('deleteTaskDB err: ', err);
+        throw err;
+    }
+```
+
+The variable functions do the expected query.
+Here we used `pool.execute(<sql_query>)` method instead of `pool.query(<sql_query>)`. The main difference between `execute()` and `query()` is that execute method prepares the statement first meaning, it uses parameterized input. This helps prevent SQL injection because the parameters are automatically escaped. The prepared statement can be cached and reused, which may improve  performance if you execute the same query multiple times with different  parameters. `query()` exceutes without preparing the statement efficient for static queries but cannot be cached or reused.
+
+### Summary
+
+* We use ‘mysql2’ or ‘mysql2/promise’ packages.
+
+* `pool = createPool({...})` creates pool of concurrent connection with database. It is used to handle multiple queries.
+* `connection = pool.getConnection()` retireves connection with database. And `connection.release()` will release the connection and gives back to pool.
+* `pool.query()` executes sql query statically, it doesnot provide any parameter binding.
+* `pool.execute()` prepares sql first, query can be cached and reused better for security and performance.
+
+---
+
+## VIII. ORMS
 
 ### Introduction
 
 ### Summary
 
 ---
--->
-
-<!-- 
-
-## 7. MODELS & ORMS 
-
-### Introduction
-
-### Summary
-
----
--->
-
 <!-- 
 
 ## 8. FORMS AND VALIDATION 
@@ -474,16 +677,77 @@ In Express, beyond basic middleware usage, there are many commonly used third-pa
 ---
 -->
 
-<!-- 
-
-## 8. JSON WEB TOKEN 
+## 8. JSON WEB TOKEN
 
 ### Introduction
 
+JWT stands for JSON Web Token. It is an open standard that is used for securely transmitting information between parties as a JSON object. Typically used for authentication and authorization, a  JWT consists of three parts:
+
+1. Header: Header consists for the information about the token. It specifies token type (jwt) and signing algorithm.
+2. Payload: Payload contains the main data that is transmitted.
+3. Signature: Signature is created by taking encoded header and payload signing with a secret key. It ensures the data is not tampered.
+
+### JWT in Express
+
+We use package ‘jsonwebtoken’ methods such as sign( ) to create a new token, verify( ) to verify the token.
+
+### Signing JWT
+
+Signing JWT means creating a new token. It is done my sign( ) method of ‘jsonwebtoken’ package. The method takes 3 arguments: Payload data, secret key and other options like expiry time. Example:
+
+```javascript
+const jwt = require("jsonwebtoken");
+const SECRET_KEY = "Nepal";
+const generateAccessToken = function (userEmail) {
+    return jwt.sign({user_email: userEmail}, SECRET_KEY, {expiresIn: "2h"});
+};
+```
+
+### Verifying JWT
+
+We can verify a JWT token by `verify()` method of `jsonwebtoken` package. It takes 2 required arguments: Token string and secret key. Example:
+
+```javascript
+const verified = jwt.verify(token, SECRET_KEY);
+```
+
+It works synchronouly. It returns the decoded payload data that has been signed to the user or else throws error it couldn’t verify the token.
+The method can also uses callback function but it will work asynchronously. The callback function uses 2 arguments.
+
+```javascript
+const verified = await jwt.verify(token, "Nepal", (err, decoded) => {
+      if (err)
+            console.log(“jwt error:”,err);
+            console.log(“payload”:decoded);
+        }
+);
+```
+
+Note: The asynchronous `verify()` method is not promise-based so we dont need to used `await` keyword. So, its better to use synchronous `verify()`.
+
+### JWT Usage
+
+We use 2 token strategy for jwt usage one is access token and another is refresh token. These tokens helps in managing user authentication for API requests.
+
+* Access Token:
+  It is used for authentication API requests and access protected resources. It typically contains the necessary user information and permissions (claims) needed to authorize a request. They are short lived. User sends it in each api request to access authenticate itself.
+
+* Refresh Token:
+  It is used for generating access token, if token is expired or lost without requiring for re-authenticate the user. It is long live and stored in http-cookie with secure enabled. We store the refresh token in database which helps us to create more secured server.
+
 ### Summary
 
+1. JWT is used for securely transmitting data across the network by encoding the data with a secret key.
+
+2. `jwt.sign( {payload}, SECRET_KEY, {options})` is used to create a new token.
+
+3. `jwt.verify( ‘token-string’,  SECRET_KEY, options/callback)` checks the token for its authenticity.
+
+4. `verify()` works synchronously for 2 arguments, but if we use 3 arguments where a callback function handles error and decoded token, it works asynchronously (not promise based).
+
+5. We use access token authenticate user for each request but refresh token regenerates access token if the access token it lost or expired.
+
 ---
--->
 
 ## REFERENCES
 
